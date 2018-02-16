@@ -5,6 +5,9 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
+#include "utils/output.h"
+
+
 
 std::string double2hexstr(double x) {
 	union
@@ -51,7 +54,7 @@ int main(int argc, char** argv) {
 //	int m = 1;
 //	unsigned int um = 1;
 //	unsigned long ul = 1;
-//	float f = 1.0f;
+//	numeric f = 1.0f;
 //	double d = 1.0;
 //	for( int i=1; i<=101; i++) {
 //		m*=i;

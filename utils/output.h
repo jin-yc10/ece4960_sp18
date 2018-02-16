@@ -5,17 +5,22 @@
 #ifndef ECE4960_SP18_OUTPUT_H
 #define ECE4960_SP18_OUTPUT_H
 
-std::string double2hexstr(double x) {
-    union {
-        long long i;
-        double    d;
-    } value;
+#include <string>
 
-    value.d = x;
-    char buf[17];
-    snprintf (buf,sizeof(buf),"%016llx",value.i);
-    buf[16]=0; //make sure it is null terminated.
-    return std::string(buf);
-}
+#define INFO 0
+#define WARN 1
+#define CRIT 2
+
+#include <fstream>
+
+#define OUTPUT_LEVEL INFO
+
+#define V(s, X) s << #X << " = " << X << std::endl
+#define O(s, X) s std::cout << X << std::endl
+
+#define output_to(stream, x) stream << X << std::endl
+
+std::string double2hexstr(double x);
+std::string float2hexstr(float x);
 
 #endif //ECE4960_SP18_OUTPUT_H
