@@ -1,0 +1,230 @@
+
+=== OVERFLOW TEST ===
+Use factorial to generate overflow with integer
+The overflow is detected by both '__builtin_smul_overflow' and 'mul_overflow_alt'
+The * at the beginning of the line indicate whether an overflow occurs.
+The first * is for mul_overflow_alt and the second * is __builtin_smul_overflow
+
+1   1
+2   2
+3   6
+4   24
+5   120
+6   720
+7   5040
+8   40320
+9   362880
+10   3628800
+11   39916800
+12   479001600
+13** 1932053504
+14** 1278945280
+
+=== divided_by_zero TEST ===
+CAUSE SIGFPE on WINDOWS, MinGWCompiler gave warning: division by zero [-Wdiv-by-zero]
+1.0/0.0 = inf
+
+=== float_overflow TEST ===
+Use factorial to generate overflow with float
+1	3f800000 0 1
+2	40000000 0 2
+3	40c00000 0 6
+4	41c00000 0 24
+5	42f00000 0 120
+6	44340000 0 720
+7	459d8000 0 5040
+8	471d8000 0 40320
+9	48b13000 0 362880
+10	4a5d7c00 0 3.6288e+06
+11	4c184540 0 3.99168e+07
+12	4de467e0 0 4.79002e+08
+13	4fb99466 0 6.22702e+09
+14	51a261d9 0 8.71783e+10
+15	53983bbb 0 1.30767e+12
+16	55983bbb 0 2.09228e+13
+17	57a1bf77 0 3.55687e+14
+18	59b5f766 0 6.40237e+15
+19	5bd815c9 0 1.21645e+17
+20	5e070d9e 0 2.4329e+18
+21	603141df 0 5.10909e+19
+22	6273ba93 0 1.124e+21
+23	64af2e1a 0 2.5852e+22
+24	67036294 0 6.20448e+23
+25	694d4a07 0 1.55112e+25
+26	6ba6cc26 0 4.03291e+26
+27	6e0cbc40 0 1.08889e+28
+28	70764970 0 3.04888e+29
+29	72df328e 0 8.84176e+30
+30	75513f65 0 2.65253e+32
+31	77cab56a 0 8.22284e+33
+32	7a4ab56a 0 2.63131e+35
+33	7cd10b15 0 8.68332e+36
+34	7f5e1bc6 0 2.95233e+38
+35	7f800000 1 inf
+36	7f800000 1 inf
+37	7f800000 1 inf
+38	7f800000 1 inf
+39	7f800000 1 inf
+
+=== float_inf TEST ===
+Use std::numeric_limits<float>::infinity() to get inf
+float_inf:7f800000 inf
+float_neg_inf:ff800000 -inf
+1/inf = 0
+sin(inf) = nan
+exp(inf) = inf
+1/ninf = -0
+sin(ninf) = nan
+exp(ninf) = 0
+inf+ninf = nan
+0.0*inf = nan
+0.0*ninf = nan
+
+=== float_nan TEST ===
+In std library we have two different kind of nan( quiet, signal) 
+quiet nan is just nan while signal nan will cause an exception
+7fc00000	nan
+7fa00000	nan
+ffc00000	nan
+
+=== signed_zero TEST ===
+1/inf = zero, 1/ninf = n_zero
+zero 00000000 0
+neg_zero 80000000 -0
+(zero == 0.0) = 1
+(zero == -0.0) = 1
+(zero == neg_zero) = 1
+std::log(zero) = -inf
+std::log(neg_zero) = -inf
+std::sin(zero)/zero = nan
+std::sin(neg_zero)/neg_zero = nan
+std::sin(neg_zero)/std::abs(neg_zero) = nan
+
+=== gradual_underflow TEST ===
+v divided by 10 each time
+x: 0x00000001	1.4013e-45
+y: 0x00000002	2.8026e-45
+(x-y==0) = 0
+(x==y) = 0
+((x-y)+y==x) = 1
+((x/y)==1.0f) = 0
+x: 0x0000000a	1.4013e-44
+y: 0x0000000a	1.4013e-44
+(x-y==0) = 1
+(x==y) = 1
+((x-y)+y==x) = 1
+((x/y)==1.0f) = 1
+0	3dcccccd	0.1
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.1211
+1	3c23d70a	0.01
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12343
+2	3a83126e	0.001
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+3	38d1b716	0.0001
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+4	3727c5ab	1e-05
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+5	358637bc	1e-06
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+6	33d6bf93	1e-07
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+7	322bcc76	1e-08
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+8	3089705e	1e-09
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+9	2edbe6fd	1e-10
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+10	2d2febfe	1e-11
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+11	2b8cbccb	1e-12
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+12	29e12e12	1e-13
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+13	283424db	1e-14
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+14	26901d7c	1e-15
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+15	24e69593	1e-16
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+16	233877a9	1e-17
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+17	219392ee	1e-18
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+18	1fec1e4a	1e-19
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+19	1e3ce508	1e-20
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+20	1c971da0	1e-21
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+21	1af1c900	1e-22
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+22	19416d9a	1e-23
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+23	179abe15	1e-24
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+24	15f79688	1e-25
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+25	14461206	1e-26
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+26	129e74d2	1e-27
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+27	10fd87b6	1e-28
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+28	0f4ad2f8	1e-29
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+29	0da24260	1e-30
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+30	0c01ceb3	1e-31
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+31	0a4fb11e	1e-32
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+32	08a6274b	1e-33
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+33	0704ec3c	1e-34
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+34	0554ad2d	1e-35
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+35	03aa2424	1e-36
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+36	02081cea	1e-37
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+37	006ce3ee	1e-38
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+38	000ae398	1e-39
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+39	000116c2	9.99995e-41
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+40	00001be0	9.99967e-42
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12346
+41	000002ca	1.00053e-42
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12325
+42	00000047	9.94922e-44
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.12676
+43	00000007	9.80909e-45
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1.14286
+44	00000001	1.4013e-45
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = 1
+45	00000000	0
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = nan
+46	00000000	0
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = nan
+47	00000000	0
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = nan
+48	00000000	0
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = nan
+49	00000000	0
+(sin(1.123456789012345f*fu_x.f) / fu_x.f) = nan
+
+===== calc_pi =====
+1) 4tan(1)
+2) ln(640320^3+744)/sqrt(163)
+3) taylor series of tan(1), 2sigma(n!/(2n+1)!!), each 14 term will get 4 digits
+   in this program, we choose 560 terms in order to get 160(560/14*4) digits 
+   pi = 2 * (f[1]+1/3(f[2]+2/5(f[3]+...(f[560])...)) 
+   then we extract 4 digits out of the array and modify f[b] each time
+   ref: https://cs.uwaterloo.ca/~alopez-o/math-faq/mathtext/node12.html
+3.1--------01--------01--------0
+pi = 4*atan(1.0)
+3.14159265358979311599796346854
+3.14159265358979311599796346854
+314159265358979323846264338327952884197169399375105820974944592307816406286208998628034825342117067982148086513282366470938446955582231725359408128481117450
