@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <stdio.h>
+#include "dense_matrix.h"
 
 template<class T>
 class sparse_matrix {
@@ -15,10 +16,10 @@ private:
 	std::vector<int> row_ptr;
 	std::vector<int> col_ind;
 public:
-	sparse_matrix(int rank) {
+	sparse_matrix<T>(int rank) {
 	
 	}
-	
+
 	void add_element(int rowId, int colId, T val) {
 		if( val == 0.0 ) { // TODO: this comparision might have problem
 			return; // add a zero, directly jump out
@@ -34,7 +35,7 @@ public:
 		}
 		vals.insert(vals.begin()+i, val);
 		col_ind.insert(col_ind.begin()+i, colId);
-		for( int r=rowId+1; r<this->rank(); r++) {
+		for( int r=rowId+1; r<this->rank()+1; r++) {
 			row_ptr[r]++;
 		}
 	}
@@ -59,8 +60,20 @@ public:
 				return vals[i];
 			}
 		}
-		return 0;
+		return (T)0;
 	}
+
+  int get_row_idx(int row_id) const {
+    return row_ptr[row_id];
+  }
+
+  T get_element_by_id(int id) const {
+    return vals[id];
+  }
+
+  int get_col_by_id(int id) const {
+    return col_ind[id];
+  }
 	
 	int rank() {
 		return (int)row_ptr.size()-1;
@@ -87,7 +100,57 @@ public:
 		}
 		return b;
 	}
-	
+
+  int row_permute(std::vector<T>& x, int row_i, int row_j) {
+    std::swap(x[row_i], x[row_j]);
+    if(row_i > row_j) {
+      int temp = row_i; row_i = row_j; row_j = temp; // make sure row_i < row_B
+    }
+    int n_A = row_ptr[row_i+1] - row_ptr[row_i];
+    int n_B = row_ptr[row_j+1] - row_ptr[row_j];
+    std::vector<int> _row_idx;
+    std::vector<T> _vals;
+    std::vector<int> _col_idx;
+    for(int r=0; r<rank(); r++) {
+      _row_idx.push_back(_vals.size());
+      if(r == row_i) {
+        int _r = row_j;
+        for(int c=row_ptr[_r]; c<row_ptr[_r+1]; c++){
+          _vals.push_back(vals[c]);
+          _col_idx.push_back(col_ind[c]);
+        }
+      } else if(r == row_j) {
+        int _r = row_i;
+        for(int c=row_ptr[_r]; c<row_ptr[_r+1]; c++){
+          _vals.push_back(vals[c]);
+          _col_idx.push_back(col_ind[c]);
+        }
+      } else {
+        for (int c = row_ptr[r]; c < row_ptr[r + 1]; c++) {
+          _vals.push_back(vals[c]);
+          _col_idx.push_back(col_ind[c]);
+        }
+      }
+    }
+    _row_idx.push_back(_vals.size());
+    row_ptr = _row_idx;
+    vals = _vals;
+    col_ind = _col_idx;
+  }
+
+  int row_scale(std::vector<T>& x, int row_i, int row_j, T a) {
+    x[row_j] += x[row_i]*a;
+    for(int c=0; c<rank(); c++) {
+      T v_i = retrieve_element(row_i, c);
+      if(v_i == (T)0) {
+        continue;
+      } else {
+        T v_j = retrieve_element(row_j, c);
+        add_element(row_j, c, v_j+v_i*a);
+      }
+    }
+  }
+
 	void report() {
 		printf("r:");
 		for( int r=0; r<rank()+1; r++) {
