@@ -6,6 +6,7 @@ Project structure:
 CMake Version should be greater than 3.5
 This project is tested mostly on windows and mac os x
 
+```
 Project Root
 |- HackerPractices
 |   |- Note02
@@ -21,3 +22,4 @@ Project Root
 |   |- mem_usage: measure the memory usages, cross-platform, ref: https://github.com/DigitalInBlue/Npas4
 |   |- output: double and float to hex string
 |   |- timer: for stopwatch, use std::chrono::steady_clock ( supported in c++11 )
+```
