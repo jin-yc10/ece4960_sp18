@@ -1,0 +1,17 @@
+Row 1999, Cnt=49301, Memory:5.051MB
+Row 3999, Cnt=73081, Memory:5.598MB
+Row 5999, Cnt=81075, Memory:5.598MB
+Row 7999, Cnt=89082, Memory:5.598MB
+Row 9999, Cnt=97075, Memory:5.598MB
+Row 11999, Cnt=105540, Memory:5.598MB
+Row 13999, Cnt=112858, Memory:5.598MB
+Row 15999, Cnt=119858, Memory:5.598MB
+Total: 126150
+Load data:      0.3144 sec
+A[0,0] = 0.08321
+A[6838,6838] = 0.008366
+A[17757,17757 = 0.01733
+5 permute:      0.04312 sec
+scale, permute then scale:      0.1374 sec
+Sigma B = 101.6, Sigma A = 101.6, Delta = 0
+3.340MB

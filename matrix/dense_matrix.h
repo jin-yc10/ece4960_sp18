@@ -30,6 +30,10 @@ public:
     init(rank);
   }
 
+  dense_matrix<T>(sparse_matrix<T> s) {
+    copy(s);
+  }
+
   void copy(sparse_matrix<T>& sp) {
     init(sp.rank());
     for(int r=0; r<rank(); r++) {
@@ -45,6 +49,10 @@ public:
 
   ~dense_matrix() {
 
+  }
+
+  void add_element(int rowId, int colId, T val) {
+    vals[rowId][colId] = val;
   }
 
   int rank() {
@@ -73,6 +81,27 @@ public:
       b[r] = sum;
     }
     return b;
+  }
+
+  int row_permute(std::vector<T>& x, int row_i, int row_j) {
+    std::swap(x[row_i], x[row_j]);
+    for(int c=0; c<rank(); c++) {
+      std::swap(vals[row_i][c], vals[row_j][c]);
+    }
+  }
+
+  int row_scale(std::vector<T>& x, int row_i, int row_j, T a) {
+    x[row_j] += x[row_i]*a;
+    for(int c=0; c<rank(); c++) {
+      T v_i = retrieve_element(row_i, c);
+      if(v_i == (T)0) {
+        continue;
+      } else {
+        T v_j = retrieve_element(row_j, c);
+        add_element(row_j, c, v_j+v_i*a);
+      }
+    }
+    return 0;
   }
 
   void report() {

@@ -1,4 +1,4 @@
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(../..)
 
 set(CASES overflow
         divided_by_zero
@@ -18,7 +18,7 @@ foreach(C ${CASES})
 endforeach()
 
 add_executable(program01 program01.cpp ${PROGRAM01_SRCS}
-        ${PROJECT_SOURCE_DIR}/utils/output.cpp
-        ${PROJECT_SOURCE_DIR}/numeric/floats.cpp)
+        ../../utils/output.cpp
+        ../../numeric/floats.cpp)
 
 
