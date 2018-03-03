@@ -5,7 +5,7 @@
 #ifndef ECE4960_SP18_DENSE_MATRIX_H
 #define ECE4960_SP18_DENSE_MATRIX_H
 
-#include "sparse_matrix.h"
+#include <matrix/sparse_matrix.h>
 
 template<class T>
 class sparse_matrix;

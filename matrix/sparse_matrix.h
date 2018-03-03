@@ -10,7 +10,10 @@
 #include <iostream>
 #include <cmath>
 #include <utils/mem_usage.h>
-#include "dense_matrix.h"
+#include <matrix/dense_matrix.h>
+
+template<class T>
+class dense_matrix;
 
 template<class T>
 class sparse_matrix {
@@ -136,7 +139,6 @@ public:
 
     while(!feof(pf)) {
       fscanf(pf, "%d %d %f\n", &r, &c, &v);
-//      printf("%d: %d %d %f\n", n, r, c, v);
       n++;
       value_buf[r-1].push_back(v);
       col_buf[r-1].push_back(c-1);
