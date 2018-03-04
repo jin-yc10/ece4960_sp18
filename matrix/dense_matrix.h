@@ -1,5 +1,5 @@
 //
-// Created by 金宇超 on 2/15/18.
+// Created by yj374 on 2/15/18.
 //
 
 #ifndef ECE4960_SP18_DENSE_MATRIX_H

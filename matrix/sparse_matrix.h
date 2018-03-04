@@ -1,5 +1,5 @@
 //
-// Created by 金宇超 on 2/15/18.
+// Created by yj374 on 2/15/18.
 //
 
 #ifndef ECE4960_SP18_MATRIX_H
@@ -26,6 +26,10 @@ public:
 	  row_ptr.resize(rank);
 	}
 
+	/// val = || mat_1 - mat_2 ||, the rank of the two matrix should be the same
+	/// mat_1 is this and mat_2 is a dense matrix
+	/// \param d dense matrix D
+	/// \return the norm_diff value of the two matrix
 	T norm_diff(dense_matrix<T> d) {
 		T sum = 0;
 		for( int r=0; r<rank(); r++) {
@@ -38,6 +42,11 @@ public:
 		return std::sqrt(sum);
 	}
 
+	/// add an element to the matrix, if the val is zero, the function will directly return
+	/// and this function will replace the old value with the new value
+	/// \param rowId
+	/// \param colId
+	/// \param val
 	void add_element(int rowId, int colId, T val) {
 		if( val == 0.0 ) { // TODO: this comparision might have problem
 			return; // add a zero, directly jump out
@@ -61,23 +70,31 @@ public:
 		}
 	}
 	
+	/// NOT USED
+	/// \param rowId
+	/// \param colId
 	void delete_element(int rowId, int colId) {
 		int row_idx = row_ptr[rowId];
 		int col_idx = -1;
 		int i=row_idx;
 		for( i=row_idx; i<row_ptr[rowId+1]; i++) {
 			if( col_ind[i] == colId ) {
-				
+				// TODO: NOT FINISHED
 				return;
 			}
 		}
 	}
 	
+	/// Return the value at [rowId, colId]
+	/// \param rowId
+	/// \param colId
+	/// \return
 	T retrieve_element(int rowId, int colId) {
 		int row_idx = row_ptr[rowId];
 		int col_idx = -1;
 		for( int i=row_idx; i<row_ptr[rowId+1]; i++) {
 			if( col_ind[i] == colId ) {
+				// TODO: USE BI-SEARCH to accelerate?
 				return vals[i];
 			}
 		}
@@ -104,6 +121,9 @@ public:
 		return (int)vals.size();
 	}
 	
+	/// return the vector of Ax, if rank doesn't match, return empty vector
+	/// \param x x, should be a vector, size of x should be equal to A.rank()
+	/// \return a vector, Ax
 	std::vector<T> product_ax(std::vector<T> x) {
 		if( x.size() != rank() ) {
 			return std::vector<T>();
@@ -122,6 +142,9 @@ public:
 		return b;
 	}
 
+	/// LOAD mtx file, will output one line of input every 2000 lines
+	/// \param path
+	/// \return Number of Non-Zero elements
   int load_mtx(const char* path) {
     FILE* pf = fopen(path, "r");// data/memplus.mtx","r");
     char buf[500];
@@ -170,6 +193,11 @@ public:
     return n;
   }
 
+	/// permute between row_i and row_j
+	/// \param x
+	/// \param row_i
+	/// \param row_j
+	/// \return 0
   int row_permute(std::vector<T>& x, int row_i, int row_j) {
     std::swap(x[row_i], x[row_j]);
     if(row_i > row_j) {
@@ -208,6 +236,12 @@ public:
 	  return 0;
   }
 
+	/// Row_j += Row_i*a
+	/// \param x
+	/// \param row_i
+	/// \param row_j
+	/// \param a the scale
+	/// \return 0
   int row_scale(std::vector<T>& x, int row_i, int row_j, T a) {
     x[row_j] += x[row_i]*a;
     for(int c=0; c<rank(); c++) {
@@ -222,6 +256,11 @@ public:
 	  return 0;
   }
 
+	/// output the matrix
+	/// r: row_ptr
+	/// c: col_ind
+	/// v: vals
+	/// Then will be the full matrix
 	void report() {
 		printf("r:");
 		for( int r=0; r<rank()+1; r++) {
@@ -250,6 +289,8 @@ public:
 		printf("\n");
 	}
 	
+	/// generate the test 5x5 matrix
+	/// \return the test matrix
 	static sparse_matrix generate_test_matrix() {
 		sparse_matrix<T> m(5);
 		for (int i = 1; i <= 12; i++) {
