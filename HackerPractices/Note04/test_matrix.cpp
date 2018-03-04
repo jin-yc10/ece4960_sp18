@@ -20,6 +20,8 @@ int main() {
 	
 	float raw_x[5] = {5,4,3,2,1};
 	std::vector<float> x(raw_x, raw_x + sizeof(raw_x) / sizeof(raw_x[0]) );
+	
+	// Note04, Pg20, Hacker Practice
 	auto b = m.product_ax(x);
 	
 	for(int i=0; i<b.size(); i++) {

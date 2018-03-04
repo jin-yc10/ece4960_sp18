@@ -88,8 +88,10 @@ public:
     for(int c=0; c<rank(); c++) {
       std::swap(vals[row_i][c], vals[row_j][c]);
     }
+	  return 0;
   }
 
+	// row_j += row_i*a
   int row_scale(std::vector<T>& x, int row_i, int row_j, T a) {
     x[row_j] += x[row_i]*a;
     for(int c=0; c<rank(); c++) {

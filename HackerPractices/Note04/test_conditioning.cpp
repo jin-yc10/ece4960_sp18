@@ -5,7 +5,9 @@
 #include <iostream>
 
 /*
-Output on Mac, Clang:
+ * Note04, Pg26
+ * Output on Mac, Clang:
+
 e = 0.001, d = 0
 e = 0.0001, d = 2.02954e-19
 e = 1e-05, d = 2.68521e-18
@@ -19,6 +21,7 @@ e = 1e-12, d = 0.0019332
 e = 1e-13, d = 24.2568
 e = 1e-14, d = 1070.37
 e = 1e-15, d = nan
+
 */
 
 int main(int argc, char** argv) {
