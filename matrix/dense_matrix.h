@@ -6,6 +6,7 @@
 #define ECE4960_SP18_DENSE_MATRIX_H
 
 #include <matrix/sparse_matrix.h>
+#include "vector_util.h"
 
 template<class T>
 class sparse_matrix;
@@ -26,6 +27,11 @@ class dense_matrix {
   }
 
 public:
+  
+  enum solve_method {
+	  gauss_seidel
+  };
+  
   dense_matrix<T>(int rank) {
     init(rank);
   }
@@ -66,7 +72,46 @@ public:
   T retrieve_element(int rowId, int colId) {
     return vals[rowId][colId];
   }
-
+  
+  std::vector<T> solve(const std::vector<T>& b, T epsilon,
+                       unsigned int max_iter = 4,
+                       solve_method method = gauss_seidel) {
+    
+    std::vector<T> x(rank());
+    for( int i=0; i<rank(); i++) {
+      x[i] = 0.000001;
+    }
+    T d_;
+	  std::cout << "Solver = Dense Gauss-Seidel" << std::endl;
+    unsigned int iter = 0;
+    while(max_iter > iter) { // Loop until reach max iter
+      iter++;
+      double diff = 0.0;
+      std::cout << "Iter = " << iter;
+	    // ROW loop
+      for( int j=0; j<rank(); j++) {
+        d_ = 0.0;
+	      // COL loop
+        for( int i=0; i<rank(); i++) {
+          if( i == j ) continue; // skip ajj
+	        if( this->vals[j][i] == 0 ) continue;
+          d_ = d_ + this->vals[j][i]*x[i];
+        }
+        double t = (b[j] - d_)/retrieve_element(j,j);
+        diff += std::abs(x[j] - t);
+        x[j] = t;
+      }
+      
+      auto b_ = this->product_ax(x);
+      auto diff_b = norm_vector_diff(b, b_);
+      std::cout << ", difference of b = " << diff_b << std::endl;
+      if( diff < epsilon ) {
+        break;
+      }
+    }
+    return x;
+  }
+  
   std::vector<T> product_ax(std::vector<T> x) {
     if( x.size() != rank() ) {
       return std::vector<T>();

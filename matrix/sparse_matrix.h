@@ -8,9 +8,11 @@
 #include <vector>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <utils/mem_usage.h>
 #include <matrix/dense_matrix.h>
+#include "vector_util.h"
 
 template<class T>
 class dense_matrix;
@@ -22,6 +24,10 @@ private:
 	std::vector<int> row_ptr;
 	std::vector<int> col_ind;
 public:
+	enum solve_method {
+		jacobi, gauss_seidel, sor
+	};
+	
 	sparse_matrix<T>(int rank) {
 	  row_ptr.resize(rank);
 	}
@@ -142,6 +148,207 @@ public:
 		return b;
 	}
 
+	/// Load the sparse matrix from csv file
+	/// \param folder the folder contains colInd.csv, rowPtr.csv, value.csv
+	/// \param rank the rank
+	/// \return number of non-zero elements
+	int load_csv(const char* folder, int rank) {
+		std::cout << "Load csv from " << folder << ", rank = " << rank << std::endl;
+		
+		std::string prefix(folder);
+		
+		std::ifstream row_file(prefix+"/rowPtr.csv");
+		std::ifstream col_file(prefix+"/colInd.csv");
+		std::ifstream val_file(prefix+"/value.csv");
+		
+		this->row_ptr.clear();
+		this->vals.clear();
+		this->col_ind.clear();
+		
+		this->row_ptr.resize(rank+1);
+		for(int i=0; i<rank+1; i++) {
+			int row_idx;
+			row_file >> row_idx;
+			this->row_ptr[i] = row_idx-1;
+		}
+		
+		int nz = this->row_ptr[rank];
+		this->vals.resize(nz);
+		this->col_ind.resize(nz);
+		
+		for(int i=0; i<rank; i++) {
+			int row_idx = this->row_ptr[i];
+			int row_idx_next = this->row_ptr[i+1];
+			for(int c=row_idx; c<row_idx_next; c++) {
+				int col_id;
+				col_file >> col_id;
+				this->col_ind[c] = col_id - 1;
+				val_file >> this->vals[c];
+			}
+		}
+		
+		std::cout << "Load done, nz = " << nz << " " << this->col_ind.size() << " " << this->vals.size() << std::endl;
+		
+		return nz;
+	}
+	
+	std::vector<T> solve_sor(const std::vector<T>& b, T epsilon,
+	                         unsigned int max_iter = 4, void* args = NULL) {
+		T w = *(double*)args;
+		std::vector<T> x(rank());
+		std::vector<T> x_old(rank());
+		for( int i=0; i<rank(); i++) {
+			x[i] = 0.000001;
+		}
+		if( 0 > w || 2 < w ) {
+			return x;
+		}
+		T d_;
+		std::cout << "Solver = SOR" << std::endl;
+		unsigned int iter = 0;
+		while(max_iter > iter) {
+			iter++;
+			double diff = 0.0;
+			// copy vector x
+			for( int i=0; i<rank(); i++) {
+				x_old[i] = x[i];
+			}
+			std::cout << "Iter = " << iter;
+			for( int j=0; j<rank(); j++) {
+				d_ = b[j];
+				int row_idx = this->row_ptr[j];
+				int row_idx_next = this->row_ptr[j+1];
+				for( int i=row_idx; i<row_idx_next; i++) {
+					if( this->col_ind[i] == j ) continue; // skip aii
+					if( this->col_ind[i] < j ) {
+						d_ -= this->vals[i]*x[this->col_ind[i]];
+					} else {
+						d_ -= this->vals[i]*x_old[this->col_ind[i]];
+					}
+				}
+				double t = d_/retrieve_element(j,j) - x_old[j]; // d_ = bi-sigma
+				x[j] = x_old[j] + w*t;
+				diff += std::abs(x[j] - x_old[j]);
+			}
+			
+			auto b_ = this->product_ax(x);
+			auto diff_b = norm_vector_diff(b, b_);
+			std::cout << ", difference of b = " << diff_b << std::endl;
+			if( diff < epsilon ) {
+				break;
+			}
+		}
+		return x;
+	}
+	
+	std::vector<T> solve_jacobi(const std::vector<T>& b, T epsilon,
+	                            unsigned int max_iter = 4) {
+		std::vector<T> x(rank());
+		std::vector<T> x_old(rank());
+		for( int i=0; i<rank(); i++) {
+			x[i] = 0.000001;
+		}
+		T d_;
+		std::cout << "Solver = Jacobi" << std::endl;
+		unsigned int iter = 0;
+		while(max_iter > iter) {
+			iter++;
+			double diff = 0.0;
+			for( int i=0; i<rank(); i++) {
+				x_old[i] = x[i];
+			}
+			std::cout << "Iter = " << iter;
+			for( int j=0; j<rank(); j++) {
+				d_ = 0.0;
+				int row_idx = this->row_ptr[j];
+				int row_idx_next = this->row_ptr[j+1];
+				for( int i=row_idx; i<row_idx_next; i++) {
+					if( this->col_ind[i] == j ) continue; // skip aii
+					d_ = d_ + this->vals[i]*x_old[this->col_ind[i]];
+				}
+				double t = (b[j] - d_)/retrieve_element(j,j);
+				diff += std::abs(x[j] - t);
+				x[j] = t;
+			}
+			
+			auto b_ = this->product_ax(x);
+			auto diff_b = norm_vector_diff(b, b_);
+			std::cout << ", difference of b = " << diff_b << std::endl;
+			if( diff < epsilon ) {
+				break;
+			}
+		}
+		return x;
+	}
+	
+	std::vector<T> solve_gauss_seidel(const std::vector<T>& b, T epsilon,
+	                            unsigned int max_iter = 4) {
+		std::vector<T> x(rank());
+		std::vector<T> x_old(rank());
+		for( int i=0; i<rank(); i++) {
+			x[i] = 0.000001;
+		}
+		T d_;
+		std::cout << "Solver = Gauss-Seidel" << std::endl;
+		unsigned int iter = 0;
+		while(max_iter > iter) {
+			iter++;
+			double diff = 0.0;
+			// copy vector x
+			for( int i=0; i<rank(); i++) {
+				x_old[i] = x[i];
+			}
+			std::cout << "Iter = " << iter;
+			for( int j=0; j<rank(); j++) {
+				d_ = b[j];
+				int row_idx = this->row_ptr[j];
+				int row_idx_next = this->row_ptr[j+1];
+				for( int i=row_idx; i<row_idx_next; i++) {
+					if( this->col_ind[i] == j ) continue; // skip aii
+					if( this->col_ind[i] < j ) {
+						d_ -= this->vals[i]*x[this->col_ind[i]];
+					} else {
+						d_ -= this->vals[i]*x_old[this->col_ind[i]];
+					}
+				}
+				double t = d_/retrieve_element(j,j);
+				diff += std::abs(x[j] - t);
+				x[j] = t;
+			}
+			
+			auto b_ = this->product_ax(x);
+			auto diff_b = norm_vector_diff(b, b_);
+			std::cout << ", difference of b = " << diff_b << std::endl;
+			if( diff < epsilon ) {
+				break;
+			}
+		}
+		return x;
+	}
+	
+	/// solve linear equation Ax=b using method[jacobi]
+	/// iterate and get x
+	/// \param b vector b, the size of b should equal to rank()
+	/// \param epsilon when difference of x is less than epsilon, stop iteration
+	/// \param max_iter when iteration number reach max_iter, stop iteratioin
+	/// \param method iterate method
+	/// \return root (x) of the linear equation
+	std::vector<T> solve(const std::vector<T>& b, T epsilon,
+	                     unsigned int max_iter = 4,
+	                     solve_method method = jacobi, void* args = NULL) {
+		switch( method ) {
+			case jacobi:
+				return solve_jacobi(b, epsilon, max_iter);
+			case gauss_seidel:
+				return solve_gauss_seidel(b, epsilon, max_iter);
+			case sor:
+				return solve_sor(b, epsilon, max_iter, args);
+			default:
+				std::cout << "Unknown Solver" << std::endl;
+				return std::vector<T>();
+		}
+	}
+	
 	/// LOAD mtx file, will output one line of input every 2000 lines
 	/// \param path
 	/// \return Number of Non-Zero elements
