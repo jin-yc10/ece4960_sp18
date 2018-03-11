@@ -12,10 +12,14 @@ Project Root
 |   |- Note02
 |   |- Note03
 |   |- Note04
+|   |- Note05: test_bisection.cpp, test_newton_raphson.cpp 
 |- Hw
 |   |- Hw04, PartI.cpp, PartII.cpp
 |- matrix: matrix library
 |   |- dense and sparse matrix implementation
+|- nonlinear: nonlinear optimization
+|   |- bisection.h and .cpp, bisection search, 1d and 2d
+|   |- newton.h and .cpp newton-raphson method
 |- numeric: numeric library
 |- ProgramAssignments
 |- utils: utility functions
