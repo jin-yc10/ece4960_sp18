@@ -23,6 +23,16 @@ private:
 	std::vector<T> vals;
 	std::vector<int> row_ptr;
 	std::vector<int> col_ind;
+	
+	bool preconditioning() {
+		return true;
+	}
+	
+	std::vector<T> initial_guess(const std::vector<T>& b) {
+		std::vector<T> x(rank());
+		return x;
+	}
+	
 public:
 	enum solve_method {
 		jacobi, gauss_seidel, sor
