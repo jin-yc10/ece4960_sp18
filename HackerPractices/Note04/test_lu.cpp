@@ -11,6 +11,9 @@
  0.00 0.00 0.00 10.00 0.00
 11.00 0.00 0.00 0.00 12.00
  */
+
+// Note04, Pg38
+
 int main(int argc, char** argv) {
 	
 	// Initialize the matrix

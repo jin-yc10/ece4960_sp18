@@ -238,13 +238,13 @@ public:
 				}
 				double t = d_/retrieve_element(j,j) - x_old[j]; // d_ = bi-sigma
 				x[j] = x_old[j] + w*t;
-				diff += std::abs(x[j] - x_old[j]);
+				diff += (x[j] - x_old[j])*(x[j] - x_old[j]);
 			}
 			
 			auto b_ = this->product_ax(x);
 			auto diff_b = norm_vector_diff(b, b_);
-			std::cout << ", difference of b = " << diff_b << std::endl;
-			if( diff < epsilon ) {
+			std::cout << "\t" << x_old[0] << "\t" << x[0] << "\t" << diff << "\t" << diff_b << std::endl;
+			if( diff_b < epsilon ) {
 				break;
 			}
 		}
@@ -256,7 +256,7 @@ public:
 		std::vector<T> x(rank());
 		std::vector<T> x_old(rank());
 		for( int i=0; i<rank(); i++) {
-			x[i] = 0.000001;
+			x[i] = 1.0/this->retrieve_element(i, i)*b[i]; // init as D^-1*b
 		}
 		T d_;
 		std::cout << "Solver = Jacobi" << std::endl;
@@ -527,6 +527,33 @@ public:
 		                 3,
 		                 0, 4};
 		m.col_ind = std::vector<int>(col_raw, col_raw + sizeof(col_raw) / sizeof(col_raw[0]) );
+		return m;
+	}
+	
+	/// generate the test matrix from raw input
+	/// \param vals
+	/// \param row_ptr
+	/// \param col_idx
+	/// \return the matrix for test
+	static sparse_matrix generate_test_matrix(
+			std::vector<T> vals,
+			std::vector<T> row_ptr,
+	    std::vector<T> col_idx
+	) {
+		sparse_matrix<T> m(row_ptr.size()-1);
+		m.vals.clear();
+		for (int i = 1; i <= vals.size(); i++) {
+			m.vals.push_back((T)vals[i-1]);
+		}
+		m.row_ptr.clear();
+		for( auto i: row_ptr) {
+			m.row_ptr.push_back(i);
+		}
+		
+		m.col_ind.clear();
+		for( auto i: col_idx) {
+			m.col_ind.push_back(i);
+		}
 		return m;
 	}
 };

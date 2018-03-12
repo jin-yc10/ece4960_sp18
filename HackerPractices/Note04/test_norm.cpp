@@ -6,6 +6,7 @@
 #include <matrix/dense_matrix.h>
 
 /*
+ * Hacker Practice, Note04, Pg47
 Result was:
 Dense A1 = 24, Sparse A1 = 24
 Dense A_inf = 24, Sparse A_inf = 24

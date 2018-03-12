@@ -2,3 +2,5 @@ add_executable(HP_Note04 test_matrix.cpp ../../matrix/sparse_matrix.cpp ../../ma
 add_executable(HP_Note04_cond test_conditioning.cpp)
 add_executable(HP_Note04_lu test_lu.cpp)
 add_executable(HP_Note04_norm test_norm.cpp)
+add_executable(HP_Note04_jacobi test_jacobi.cpp)
+add_executable(HP_Note04_sor test_sor.cpp)
