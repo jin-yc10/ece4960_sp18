@@ -1,0 +1,3 @@
+add_executable(HP_Note05_2_Q5_7 power_law.cpp)
+add_executable(HP_Note05_2_Q6_1 monte_carlo_pi.cpp)
+add_executable(HP_Note05_2_Q6_2 random_distribution.cpp)
