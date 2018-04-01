@@ -1,5 +1,5 @@
 //
-// Created by 金宇超 on 3/11/18.
+// Created by yj374 on 3/11/18.
 //
 
 #ifndef ECE4960_SP18_NEWTON_H
