@@ -11,7 +11,7 @@ add_subdirectory(numeric)
 add_subdirectory(HackerPractices)
 add_subdirectory(Hw)
 
-add_subdirectory(ProgramAssignments/Program01)
-add_subdirectory(ProgramAssignments/Program02)
+#add_subdirectory(ProgramAssignments/Program01)
+#add_subdirectory(ProgramAssignments/Program02)
 
 add_executable(ece4960_sp18 main.cpp)
