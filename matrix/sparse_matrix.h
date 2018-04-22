@@ -267,7 +267,7 @@ public:
 			for( int i=0; i<rank(); i++) {
 				x_old[i] = x[i];
 			}
-			std::cout << "Iter = " << iter;
+//			std::cout << "Iter = " << iter;
 			for( int j=0; j<rank(); j++) {
 				d_ = 0.0;
 				int row_idx = this->row_ptr[j];
@@ -283,7 +283,7 @@ public:
 			
 			auto b_ = this->product_ax(x);
 			auto diff_b = norm_vector_diff(b, b_);
-			std::cout << ", difference of b = " << diff_b << std::endl;
+//			std::cout << ", difference of b = " << diff_b << std::endl;
 			if( diff < epsilon ) {
 				break;
 			}

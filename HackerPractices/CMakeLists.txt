@@ -4,3 +4,4 @@
 #add_subdirectory(Note05)
 #add_subdirectory(Note05_2)
 add_subdirectory(Note06)
+add_subdirectory(Note07)
