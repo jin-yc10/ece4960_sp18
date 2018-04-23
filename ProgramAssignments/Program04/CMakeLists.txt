@@ -1,0 +1,7 @@
+set(SRCS ${CMAKE_SOURCE_DIR}/ode/ode.cpp)
+file(GLOB fs "*.cpp")
+get_filename_component(hp_name ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
+foreach(f ${fs})
+    get_filename_component(fn ${f} NAME_WE)
+    add_executable(HP_${hp_name}_${fn} ${fn} ${SRCS})
+endforeach()
