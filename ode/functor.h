@@ -8,6 +8,7 @@
 #include <vector>
 
 class functor {
+protected:
 	std::vector<double> params;
 public:
 	functor() {};
