@@ -3,3 +3,7 @@
 //
 
 #include "functor.h"
+
+namespace general {
+
+};

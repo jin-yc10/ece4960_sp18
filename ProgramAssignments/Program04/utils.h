@@ -10,7 +10,7 @@
 double i(double t) {
 	double r = t - 20.0*std::floor(t/20.0);
 	if( r < 1.0 ) {
-		return t/10;
+		return r/10;
 	} else if( r < 10.0 ) {
 		return 0.1;
 	} else if( r < 11 ) {

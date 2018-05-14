@@ -3,9 +3,11 @@
 //
 
 #include <cmath>
-#include <lsq/functor.h>
+#include <general/functor.h>
 #include <lsq/lsq.h>
 #include <fstream>
+
+#include <dlib/optimization.h>
 
 const double Vsb = 0.0;       //S is shorted to B
 const double VT = 26E-3;      //VT in volts
@@ -16,9 +18,9 @@ double id_ekv(double Vgb, double Vdb, double Is, double K, double Vth) {
 	return Is * (l1 * l1 - l2 * l2);
 } // Id
 
-class residual: public lsq::functor {
+class residual: public general::functor {
 public:
-	residual(int n_in):lsq::functor(n_in) {}
+	residual(int n_in):general::functor(n_in) {}
 	void set_params(std::vector<double> params_) {
 		this->params = params_;
 	}
@@ -34,9 +36,9 @@ public:
 	}
 };
 
-class residual_normalized: public lsq::functor {
+class residual_normalized: public general::functor {
 public:
-	residual_normalized(int n_in):lsq::functor(n_in) {}
+	residual_normalized(int n_in):general::functor(n_in) {}
 	void set_params(std::vector<double> params_) {
 		this->params = params_;
 	}
@@ -53,11 +55,11 @@ public:
 };
 
 
-class V : public lsq::functor {
+class V : public general::functor {
 	int n_samples;
 	std::vector<residual*> residuals;
 public:
-	V(int n_in):lsq::functor(n_in) {}
+	V(int n_in):general::functor(n_in) {}
 	~V() {
 		for( int i=0; i<n_samples; i++) {
 			delete this->residuals[i];
@@ -74,7 +76,6 @@ public:
 			p_.push_back(params_[idx]);
 			p_.push_back(params_[idx+1]);
 			p_.push_back(params_[idx+2]);
-//			std::cout << p_[0] << " " << p_[1] << " " << p_[2] << std::endl;
 			idx += 3; // Vgb, Vdb, Id, ...
 			res->set_params(p_);
 			this->residuals.push_back(res);
@@ -92,17 +93,50 @@ public:
 	}
 };
 
-int main() {
+using namespace dlib;
+
+typedef matrix<double, 2, 1> input_vector;
+typedef matrix<double, 3, 1> parameter_vector;
+
+double model(
+	const input_vector& input,
+	const parameter_vector& params
+) {
+	double Vgb = input(0);
+	double Vdb = input(1);
+	//double Id = input(2);
+	double Is = params(0);
+	double K = params(1);
+	double Vth = params(2);
+	return id_ekv(Vgb, Vdb, Is, K, Vth);
+}
+
+double residual_(
+	const std::pair<input_vector, double>& data,
+	const parameter_vector& params
+) {
+	return model(data.first, params) - data.second;
+}
+
+int main(int argc, char** argv) {
+
+	std::vector<std::pair<input_vector, double> > data_samples;
+	input_vector input;
+
 	std::vector<double> V_params;
 	int n_samples = 1010;
 	V_params.push_back((double)n_samples);
-	std::ifstream nmos("data/outputNMOS.txt");
+	std::ifstream nmos("C:/Dev/ece4960_sp18/data/outputNMOS.txt");
 	std::string nothing;
 //	nmos >> nothing >> nothing >> nothing; // skip first line
 	for(int i=0; i<n_samples; i++) {
 		double v1, v2, v3;
 		nmos >> v1 >> v2 >> v3;
 		V_params.push_back(v1);V_params.push_back(v2);V_params.push_back(v3);
+		input = randm(2, 1);
+		input(0) = v1; input(1) = v2;
+		const double output = v3;
+		data_samples.push_back(std::make_pair(input, output));
 	}
 	nmos.close();
 	
@@ -110,9 +144,7 @@ int main() {
 	v_->set_params(V_params);
 	
 	lsq::lsq_config cfg;
-	cfg.a = { 1e-7, 1, 1 }; // Is, K, Vth
-	cfg.a_pre = { 0.0, 0.0, 0.0 };
-	cfg.m = lsq::newton;
+	cfg.a = { 1e-6, 1, 1 }; // Is, K, Vth
 	cfg.tol = 1e-7;
 	cfg.max_iter = (int)1e5;
 	cfg.n_var = 3;
@@ -120,6 +152,15 @@ int main() {
 	lsq::solver solver(cfg);
 	solver.solve();
 	
+	parameter_vector x;
+	x = { 1e-7, 1, 1 };
+	solve_least_squares(objective_delta_stop_strategy(1e-7).be_verbose(),
+		residual_,
+		derivative(residual_),
+		data_samples,
+		x);
+	std::cout << "inferred parameters: " << x << std::endl;
+
 	delete v_;
 	return 0;
 }

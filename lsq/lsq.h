@@ -1,22 +1,21 @@
 //
-// Created by 金宇超 on 5/11/18.
+// Created by yj374 on 5/11/18.
 //
 
 #ifndef ECE4960_SP18_LSQ_H
 #define ECE4960_SP18_LSQ_H
 
-#include "functor.h"
+#include <nonlinear/find_min.h>
 
 // Least square solver
 namespace lsq {
 	
 	enum method {
-		newton,
-		secant
+		NONE
 	};
 	
 	struct lsq_config {
-		functor* V;
+		general::functor* V;
 		double tol;
 		int max_iter;
 		int n_measured;
@@ -24,7 +23,6 @@ namespace lsq {
 		std::vector<double> x;
 		std::vector<double> a;
 		std::vector<double> a_pre;
-		method m;
 	};
 	
 	struct lsq_report {
@@ -34,6 +32,7 @@ namespace lsq {
 	
 	class solver {
 		lsq_config cfg;
+		nonlinear::find_min* fm;
 		
 		void solve_newton() {
 			std::cout << "solve_newton" << std::endl;
@@ -97,7 +96,7 @@ namespace lsq {
 				for(int i=0; i<cfg.n_var; i++) {
 					double out_pre, out;
 					(*cfg.V)(cfg.a_pre, out_pre);
-					(*cfg.V)(cfg.a, out_pre);
+					(*cfg.V)(cfg.a, out);
 					H.at<double>(i, i) = (out - out_pre) / (cfg.a[i] - cfg.a_pre[i]);
 				}
 				cv::Mat H_inv = H.inv(cv::DECOMP_SVD);
@@ -145,20 +144,10 @@ namespace lsq {
 		~solver();
 		
 		void solve() {
-			switch(cfg.m) {
-				case newton:
-					solve_newton();
-					break;
-				case secant:
-					solve_secant();
-					break;
-				default:
-					std::cout << "Unsupport method" << std::endl;
-					break;
-			}
+			this->fm->solve();
 		}
 		
 	};
-}
+};
 
 #endif //ECE4960_SP18_LSQ_H

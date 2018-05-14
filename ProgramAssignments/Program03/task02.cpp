@@ -2,16 +2,16 @@
 // Created by yj374 on 3/30/18.
 //
 
-#include <lsq/functor.h>
+#include <general/functor.h>
 #include <lsq/lsq.h>
 #include <cmath>
 #include <random>
 
 std::mt19937 rng;
 
-class power_law : public lsq::functor {
+class power_law : public general::functor {
 public:
-	power_law(int n_in):lsq::functor(n_in) {}
+	power_law(int n_in):general::functor(n_in) {}
 	
 	void set_params(std::vector<double> params_) {
 		this->params = params_;
@@ -25,9 +25,9 @@ public:
 	}
 };
 
-class residual: public lsq::functor {
+class residual: public general::functor {
 public:
-	residual(int n_in):lsq::functor(n_in) {}
+	residual(int n_in):general::functor(n_in) {}
 	void set_params(std::vector<double> params_) {
 		this->params = params_;
 	}
@@ -41,11 +41,11 @@ public:
 	}
 };
 
-class V : public lsq::functor {
+class V : public general::functor {
 	int n_samples;
 	std::vector<residual*> residuals;
 public:
-	V(int n_in):lsq::functor(n_in) {}
+	V(int n_in):general::functor(n_in) {}
 	~V() {
 	
 	}
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 	power_law pl(1); pl.set_params(pl_params);
 	int n_samples = 10;
 	V_params.push_back((double)n_samples);
-	double noise = 0; // percent
+	double noise = 5; // percent
 	std::uniform_real_distribution<double> dis(-noise, noise);
 	for(int i=0; i<n_samples; i++) {
 		std::vector<double> x;
@@ -98,8 +98,7 @@ int main(int argc, char** argv) {
 		double v;
 		pl(x, v);
 		Xs.push_back(x[0]);
-		double val = v * (1.0 + dis(rng)/100.0);
-		std::cout << val << std::endl;
+		double val = v * (1.0 + dis(rng) / 100.0);
 		S_measureds.push_back(val);
 		V_params.push_back((double)(i+1));
 		V_params.push_back(val);
@@ -108,8 +107,7 @@ int main(int argc, char** argv) {
 	v_->set_params(V_params);
 	
 	lsq::lsq_config cfg;
-	cfg.a = { 14, -0.5 };
-	cfg.m = lsq::secant;
+	cfg.a = { 10, -0.7 };
 	cfg.tol = 1e-6;
 	cfg.max_iter = (int)1e5;
 	cfg.n_var = 2;

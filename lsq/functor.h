@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <opencv2/opencv.hpp>
-
+/*
 namespace lsq {
 	// preturb factor
 	const double P = 1e-4;
@@ -50,11 +50,11 @@ namespace lsq {
 					in2[j] += dx2;
 					(*this)(in1, x1); (*this)(in2, x2);
 					H_out.at<double>(i, j) = 6*(x2-2*x1+x0)/(dx1 * dx2);
-	      }
+				}
 			}
 		};
 	}; // class functor
 
 } // namespace lsq
-
+*/
 #endif //ECE4960_SP18_FUNCTOR_H

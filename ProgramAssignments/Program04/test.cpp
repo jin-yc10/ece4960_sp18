@@ -5,15 +5,13 @@
 #include "utils.h"
 
 void test_i() {
-	std::cout << i(0.0) << std::endl;
-	std::cout << i(0.4) << std::endl;
-	std::cout << i(1.5) << std::endl;
-	std::cout << i(9.5) << std::endl;
-	std::cout << i(10.4) << std::endl;
-	std::cout << i(11.4) << std::endl;
-	std::cout << i(18.5) << std::endl;
+	for (float t = 0.0; t < 100.0; t += 0.2) {
+		std::cout << t << "\t" << i(t) << std::endl;
+	}
 }
 
 int main(int argc, char** argv) {
+	test_i();
+	std::cout << i(20.0) << std::endl;
 	return 0;
 }

@@ -13,6 +13,7 @@ add_subdirectory(numeric)
 
 #add_subdirectory(ProgramAssignments/Program01)
 #add_subdirectory(ProgramAssignments/Program02)
+add_subdirectory(Playground)
 add_subdirectory(ProgramAssignments/Program03)
 add_subdirectory(ProgramAssignments/Program04)
 
