@@ -16,7 +16,7 @@ double R1 = 10, R2 = 10, R3 = 10; // kOhm
 double C1 = 1, C2 = 1; // pF
 
 // function for figure 3
-class fig3 : public functor {
+class fig3 : public ode::functor {
 public:
 	fig3() {}
 	void set_params(std::vector<double> params_) {}

@@ -1,0 +1,36 @@
+1. Design of the program
+  According to the requirement, we need two parts. One is ODE to get the "V2 vs t" curve. The other part is to optimize
+  the Rfb in order to get the minimum Tr.
+  So the design would be:
+  a) Utilities functions [test_common.cpp]
+  b) ODE [test_ode.cpp] I decided to use RK34 without adaptive time step
+  c) Optimize [final.cpp] I decided to use Quasi-Newton method
+
+2. Document of the files
+  a) common.h:
+    Defined the ODE functor "kcl", the first element in "params" would be "Rfb"
+    The v_in(t) function "v_in(double t)
+    The id_ekv function "id_ekv(double v1, double v2)"
+  b) test_common.cpp: Test v_in(t) in order to avoid the mistake in Program Assignment 04.
+  c) test_ode.cpp: Test the ODE solver
+  d) final.cpp The actual solution of the hacker exam
+     i) "class rfb_tr: public general::functor" Formulate the relationship between Rfb and Tr
+    ii) "void search_newton()" Search the optimize Rfb using Quasi-Newton
+   iii) "void search_bisection()" Search the optimize Rfb using bisection // didn't complete
+    iv) "void search_brute_force()" Search using brute-force method
+
+3. Reuse from previous
+  a) The ODE solver in "/ode/", including "functor.h & cpp", "ode.h & cpp"
+  b) The nonlinear optimizer in "/nonlinear/", including "find_min.h & cpp"
+  c) A general functor for nonlinear optimizer in "/general/", including "functor.h & cpp"
+  d) Timer in "/utils/" including "timer_util.h & cpp"
+
+4. Validation and testing strategy
+  a) Utils: v_in(t) was tested in "test_common.cpp", we should suppose to see the sudden-change at t=1.0us
+  b) ODE: ode was tested in "test_ode.cpp", we should suppose to observe a similar curve as Figure(3)
+
+5. Result
+  It seems that 1e3 kOhm is the best result..
+  I also tried brute-force search on this problem. No doubt that the brute-force consumed pretty much time. I tried from
+  0.7MOhm to 50Mohm, the value of Tr kept rising as Rfb went larger. So here the temporal conclusion was that 1e3KOhm
+  should be the best result in this problem.

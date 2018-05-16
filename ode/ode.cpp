@@ -4,8 +4,9 @@
 
 #include <iostream>
 #include "ode.h"
+#include <utils/timer_util.h>
 
-ode::ode(ode_methods method_, ode_options opt_, functor* f_)
+ode::ode(ode_methods method_, ode_options opt_, ode_functor* f_)
 		: method(method_), opt(opt_), f(f_), iter(0){
 	ode_step init_s;
 	init_s.iter = iter;
@@ -14,6 +15,7 @@ ode::ode(ode_methods method_, ode_options opt_, functor* f_)
 }
 
 bool ode::step() {
+	tm.tick();
 	auto last = this->step_at_idx(-1);
 	ode_step s;
 	s.iter = ++iter;
@@ -26,6 +28,7 @@ bool ode::step() {
 	for( int i=0; i<opt.rank; i++) {
 		s.x[i] = last.x[i] + incr_[i];//*opt.dt;
 	}
+	s.run_time = tm.silent_tock();
 	this->steps.push_back(s);
 	return true;
 }

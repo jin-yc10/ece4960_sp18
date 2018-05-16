@@ -6,6 +6,7 @@
 #define ECE4960_SP18_ODE_H
 
 #include <ode/functor.h>
+#include <utils/timer_util.h>
 
 typedef std::vector<double> vec;
 
@@ -27,13 +28,14 @@ struct ode_options{
 struct ode_step {
 	int iter;
 	vec x;
+	double run_time;
 };
 
 class ode {
 	ode_methods method;
 	ode_options opt;
 	std::vector<ode_step> steps;
-	functor* f;
+	ode_functor* f;
 	int iter;
 private:
 	/// increment function of forward euler method
@@ -46,15 +48,13 @@ private:
 	vec incr_rk34(bool is_adap);
 	
 public:
-	
+	timer_util tm;
 	ode(ode_methods method_,
 	    ode_options opt_,
-	    functor* f);
+	    ode_functor* f);
 	bool step();
 	vec incr();
 	ode_step step_at_idx(int idx);
 };
-
-
 
 #endif //ECE4960_SP18_ODE_H
