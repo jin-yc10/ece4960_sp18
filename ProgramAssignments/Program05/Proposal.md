@@ -2,7 +2,7 @@ This matrix solver includes both direct and iterative solver.
 And the feature should be:
 1. Matrix condition checking
 2. Can deal with non-square matrix
-3. Provide some decomposition algorithms
+3. Provide some decomposition algorithms, currently QR only
 4. svd decomposition
 
 The test should include:

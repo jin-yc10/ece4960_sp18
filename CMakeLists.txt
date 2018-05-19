@@ -8,6 +8,8 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/3rd/googletest/inclu
 if( WIN32 )
     set(DLIB_LIB C:/Dev/dlib_install/lib/dlib19.10.99_debug_64bit_msvc1900.lib)
     set(DLIB_INCLUDE C:/Dev/dlib_install/include)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 elseif(APPLE)
     add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
     add_definitions(-D__GLIBCXX__)

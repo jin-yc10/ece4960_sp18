@@ -1,4 +1,4 @@
-set(SRCS ${CMAKE_SOURCE_DIR}/ode/ode.cpp)
+set(SRCS ${CMAKE_SOURCE_DIR}/ode/ode.cpp ${CMAKE_SOURCE_DIR}/utils/timer_util.cpp)
 file(GLOB fs "*.cpp")
 get_filename_component(hp_name ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
 foreach(f ${fs})

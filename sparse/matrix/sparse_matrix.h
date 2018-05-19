@@ -34,12 +34,20 @@ private:
 	}
 	
 public:
+	int rows, cols;
 	enum solve_method {
 		jacobi, gauss_seidel, sor
 	};
 	
-	sparse_matrix<T>(int rank) {
-	  row_ptr.resize(rank);
+	sparse_matrix<T>() {
+		this->rows = 0;
+		this->cols = 0;
+	}
+
+	sparse_matrix<T>(int rows, int cols) {
+		row_ptr.resize(rows+1);
+		this->rows = rows;
+		this->cols = cols;
 	}
 
 	/// val = || mat_1 - mat_2 ||, the rank of the two matrix should be the same
@@ -63,10 +71,7 @@ public:
 	/// \param rowId
 	/// \param colId
 	/// \param val
-	void add_element(int rowId, int colId, T val) {
-		if( val == 0.0 ) { // TODO: this comparision might have problem
-			return; // add a zero, directly jump out
-		}
+	void add_element(int rowId, int colId, T val) {		
 		int row_idx = row_ptr[rowId];
 		int col_idx = -1;
 		int i;
@@ -75,8 +80,12 @@ public:
 				vals[i] = val; // already exist, replace it
 				return;
 			} else if(col_ind[i] > colId) {
-        break;
-      }
+				// no element here
+				if (val == 0.0) { // TODO: this comparision might have problem
+					return; // add a zero, directly jump out
+				}
+				break; // no element here, input is also not zero
+			}
 		}
 
 		vals.insert(vals.begin()+i, val);
@@ -100,7 +109,11 @@ public:
 			}
 		}
 	}
-	
+
+	T operator()(int rowId, int colId) {
+		return retrieve_element(rowId, colId);
+	}
+
 	/// Return the value at [rowId, colId]
 	/// \param rowId
 	/// \param colId
@@ -478,27 +491,28 @@ public:
 	/// c: col_ind
 	/// v: vals
 	/// Then will be the full matrix
-	void report() {
-		printf("r:");
-		for( int r=0; r<rank()+1; r++) {
-			printf("%d ", row_ptr[r]);
-		}
-		printf("\n");
-		
-		printf("c:");
-		for( int r=0; r<element_cnt(); r++) {
-			printf("%d ", col_ind[r]);
-		}
-		printf("\n");
-		
-		printf("v:");
-		for( int r=0; r<element_cnt(); r++) {
-			printf("%f ", vals[r]);
-		}
-		printf("\n");
-		
-		for( int r=0; r<rank(); r++) {
-			for( int c=0; c<rank(); c++) {
+	void report(bool print_idx = true) {
+		if (print_idx) {
+			printf("r:");
+			for (int r = 0; r<rank() + 1; r++) {
+				printf("%d ", row_ptr[r]);
+			}
+			printf("\n");
+
+			printf("c:");
+			for (int r = 0; r<element_cnt(); r++) {
+				printf("%d ", col_ind[r]);
+			}
+			printf("\n");
+
+			printf("v:");
+			for (int r = 0; r<element_cnt(); r++) {
+				printf("%f ", vals[r]);
+			}
+			printf("\n");
+		}		
+		for( int r=0; r<rows; r++) {
+			for( int c=0; c<cols; c++) {
 				printf("%.02f ", this->retrieve_element(r,c));
 			}
 			printf("\n");
@@ -509,11 +523,11 @@ public:
 	/// generate the test 5x5 matrix
 	/// \return the test matrix
 	static sparse_matrix generate_test_matrix() {
-		sparse_matrix<T> m(5);
+		sparse_matrix<T> m(5, 5);
 		for (int i = 1; i <= 12; i++) {
 			m.vals.push_back((T) i);
 		}
-    m.row_ptr.clear();
+		m.row_ptr.clear();
 		m.row_ptr.push_back(0);
 		m.row_ptr.push_back(3);
 		m.row_ptr.push_back(6);
