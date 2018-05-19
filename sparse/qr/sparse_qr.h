@@ -95,12 +95,6 @@ public:
 		  }
 	  }
   }
-
-  bool is_upper(cv::Mat m) {
-	  for (int i = 0; i < m.size().width; i++) {
-
-	  }
-  }
 };
 
 #endif //ECE4960_SP18_SPARSE_QR_H
